@@ -1,0 +1,76 @@
+<html>
+<head>
+  <script src="/node_modules/angular/angular.js"></script>
+  <script>
+    var theModule = angular.module('fundBill', []);
+    theModule
+    .controller('CartController', function ($interval, $scope, CartFactory, $http) {
+      $scope.thePrice = CartFactory.getTotal; // function
+      CartFactory.getCart()
+      .then(function (theCart) {
+        $scope.cart = theCart;
+      });
+    });
+    theModule
+    .controller('ProductsController', function ($scope, CartFactory) {
+      // $http.get('/products') // if we had this route
+      // .then(function (response) {
+      //   $scope.products = repsonse.data;
+      // });
+      $scope.products = [{
+        price: 100,
+        title: 'Nap Time',
+        url: 'http://fillmurray.com/30/30'
+      }, {
+        price: 56,
+        title: 'Sunrise',
+        url: 'http://fillmurray.com/200/50'
+      }];
+      $scope.addSomething = function (item) {
+        CartFactory.addToCart(item);
+      };
+      console.log('products $scope', $scope);
+    });
+    theModule.factory('CartFactory', function ($http) {
+      var cart = [];
+      var totalPrice = 0;
+      return {
+        getCart: function () {
+          return $http.get('/api/cart')
+          .then(function (response) {
+            cart = response.data;
+            cart.forEach(function (item) {
+              totalPrice += item.price;
+            });
+            return response.data;
+          });
+        },
+        addToCart: function (item) {
+          return $http.post('/api/cart', item)
+          .then(function () {
+            totalPrice += item.price;
+            cart.push(item);
+          });
+        },
+        getTotal: function () {
+          return totalPrice;
+        }
+      };
+    });
+  </script>
+</head>
+<body ng-app="fundBill">
+  <div ng-controller="CartController">
+    <span>You have {{ cart.length }} items in your cart costing ${{ thePrice() }}</span>
+  </div>
+  <hr>
+  <div ng-controller="ProductsController">
+    <div ng-repeat="product in products">
+      <p>Title: {{ product.title }}</p>
+      <p>Price: ${{ product.price }}</p>
+      <img src="{{ product.url }}" />
+      <button ng-click="addSomething(product)">Add one thing</button>
+    </div>
+  </div>
+</body>
+</html>
