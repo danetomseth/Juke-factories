@@ -57,6 +57,7 @@ juke.controller('AllAlbumsController', function($scope, $http, $rootScope, $log,
   AlbumFactory.fetchAll()
     .then(function(response){
         $scope.allAlbums = response;
+        console.log('albums:', $scope.allAlbums)
     })
 })
 

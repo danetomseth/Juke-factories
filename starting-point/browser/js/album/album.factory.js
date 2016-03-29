@@ -26,6 +26,9 @@ juke.factory('AlbumFactory', function($http, $log){
     fetchAll: function(){
       return $http.get('/api/albums/')
         .then(function(res) {
+            res.data.forEach(function(album) {
+              album.imageUrl = '/api/albums/' + album._id + '.image';
+            })
             console.log('all data',res.data);
             return res.data;
         })
