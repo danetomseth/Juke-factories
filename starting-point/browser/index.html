@@ -25,7 +25,7 @@
         </sidebar>
       </div>
       <div class="col-xs-10">
-        <div ng-if="true" ng-controller="AllAlbumsController">
+        <div ng-show="false" ng-controller="AllAlbumsController">
           <h3>Albums</h3>
           <div class="row">
             <div class="col-xs-4" ng-repeat="album in allAlbums">
@@ -41,11 +41,11 @@
             </div>
           </div>
         </div>
-        <div class="album" ng-controller="AlbumCtrl" ng-if="false">
+        <div class="album" ng-controller="AlbumCtrl" ng-show="true">
           <p>
-            <h3>{{ album.name }}</h3>
-            <h3>{{ album.fullDuration }}  min</h3>
-            <img ng-src="{{ album.imageUrl }}" class="img-thumbnail">
+            <h3>{{ oneAlbum.name }}</h3>
+            <h3>{{ oneAlbum.fullDuration }}  min</h3>
+            <img ng-src="{{ oneAlbum.imageUrl }}" class="img-thumbnail">
           </p>
           <table class='table'>
             <thead>
@@ -57,7 +57,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="song in album.songs" ng-class="{active: song === currentSong}">
+              <tr ng-repeat="song in oneAlbum.songs" ng-class="{active: song === currentSong}">
                 <td>
                   <button class="btn btn-default btn-xs" ng-click="toggle(song)">
                   <span class="glyphicon" ng-class="{'glyphicon-pause': playing && song === currentSong, 'glyphicon-play': song !== currentSong || !playing}"></span>

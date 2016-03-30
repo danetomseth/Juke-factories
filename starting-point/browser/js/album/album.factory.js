@@ -35,11 +35,6 @@ juke.factory('AlbumFactory', function($http, $log){
         .catch($log.error); // $log service can be turned on and off; also, pre-bound
     },
     fetchOneAlbum: function(album){
-        return $http.get('/api/albums/' + album._id) 
-        .then(function(res) {
-            return res.data
-        })
-        .then(function(album) {
             album.imageUrl = '/api/albums/' + album._id + '.image';
             album.songs.forEach(function(song, i) {
                 song.audioUrl = '/api/songs/' + song._id + '.audio';
@@ -47,13 +42,17 @@ juke.factory('AlbumFactory', function($http, $log){
             })
             console.log(album)
             return album
-          })
-        .catch($log.error); // $log service can be turned on and off; also, pre-bound
+          
     },
 
-    fetchById: function(){
-      return $http.get('/api/:albumId/')
+    fetchById: function(id){
+      return $http.get('/api/albums/' + id)
       .then(function(res){
+          res.data.imageUrl = '/api/albums/' + res.data._id + '.image';
+          res.data.songs.forEach(function(song, i) {
+              song.audioUrl = '/api/songs/' + song._id + '.audio';
+              song.albumIndex = i;
+          })
         return res.data
       })
 

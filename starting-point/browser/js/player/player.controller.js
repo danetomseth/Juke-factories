@@ -2,11 +2,17 @@
 
 juke.controller('PlayerCtrl', function ($scope, $rootScope, PlayerFactory) {
    var audio = document.createElement('audio');
-  $scope.currentSong = PlayerFactory.getCurrentSong();
+  //$scope.currentSong = PlayerFactory.getCurrentSong();
   //$scope.playing = false;
+  //$scope.currentSong = false;
+  $scope.$on('play', function(event, data) {
+    console.log('player factory', data);
+    $scope.currentSong = data;
+    $scope.playing = PlayerFactory.isPlaying();
+    console.log('playing stat', PlayerFactory.isPlaying())
+  })
   audio.addEventListener('ended', function () {
     PlayerFactory.next();
-    // $scope.$apply(); // triggers $rootScope.$digest, which hits other scopes
     $scope.$evalAsync(); // likely best, schedules digest if none happening
   });
   audio.addEventListener('timeupdate', function () {
@@ -16,40 +22,22 @@ juke.controller('PlayerCtrl', function ($scope, $rootScope, PlayerFactory) {
     $scope.$evalAsync(); // likely best, schedules digest if none happening
   });
 
-  // state
   
-
-  // main toggle
-  $scope.toggle = function (song) {
-    if (PlayerFactory.isPlaying()) $rootScope.$broadcast('pause');
-    else $rootScope.$broadcast('play', song);
+  $scope.toggle = function () {
+    if (PlayerFactory.isPlaying()) {
+      PlayerFactory.pause();
+    }
+    else PlayerFactory.start();
   };
 
   // incoming events (from Album or toggle)
-  $scope.$on('pause', PlayerFactory.pause);
-  $scope.$on('play', PlayerFactory.start);
+  // $scope.$on('pause', PlayerFactory.pause);
+  // $scope.$on('play', PlayerFactory.start);
 
-  // functionality
- 
-  // function play (event, song){
-  //   // stop existing audio (e.g. other song) in any case
-  //   pause();
-  //   $scope.playing = true;
-  //   // resume current song
-  //   if (song === $scope.currentSong) return audio.play();
-  //   // enable loading new song
-  //   $scope.currentSong = song;
-  //   audio.src = song.audioUrl;
-  //   audio.load();
-  //   audio.play();
-  // }
 
-  // outgoing events (to Album… or potentially other characters)
-  // $scope.next = function () { pause(); $rootScope.$broadcast('next'); };
-  // $scope.prev = function () { pause(); $rootScope.$broadcast('prev'); };
   $scope.prev = PlayerFactory.previous
   $scope.next = PlayerFactory.next
-  // initialize audio player (note this kind of DOM stuff is odd for Angular)
+  
   // var audio = document.createElement('audio');
   // audio.addEventListener('ended', function () {
   //   $scope.next();

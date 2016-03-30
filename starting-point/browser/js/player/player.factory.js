@@ -7,6 +7,7 @@ juke.factory('PlayerFactory', function($rootScope){
 		song: null,
 		audio: document.createElement('audio')
 	};
+
 	
 	return {
 		start: function(song, songArray) {
@@ -15,8 +16,6 @@ juke.factory('PlayerFactory', function($rootScope){
 			//currentSong.audio.pause();
 			this.pause()
     		currentSong.playing = true;
-		    // resume current song
-		    //if (song === currentSong.song) return currentSong.audio.play();
 			currentSong.song = song;
 		    currentSong.audio.src = song.audioUrl;
 		    currentSong.audio.load();
@@ -67,20 +66,15 @@ juke.factory('PlayerFactory', function($rootScope){
 			return((currentSong.audio.currentTime / currentSong.audio.duration));
 			
 		},
+		autoCycle: function() {
+
+		},
+		currentSong: currentSong
 
 	}
 });
 
   
-  // audio.addEventListener('ended', function () {
-  //   $scope.next();
-  //   // $scope.$apply(); // triggers $rootScope.$digest, which hits other scopes
-  //   $scope.$evalAsync(); // likely best, schedules digest if none happening
-  // });
-  // audio.addEventListener('timeupdate', function () {
-  //   $scope.progress = 100 * audio.currentTime / audio.duration;
-  //   // $scope.$digest(); // re-computes current template only (this scope)
-  //   $scope.$evalAsync(); // likely best, schedules digest if none happening
-  // });
+
 
 
