@@ -1,42 +1,46 @@
 'use strict';
 
 juke.controller('PlayerCtrl', function ($scope, $rootScope, PlayerFactory) {
-   var audio = document.createElement('audio');
-  //$scope.currentSong = PlayerFactory.getCurrentSong();
-  //$scope.playing = false;
-  //$scope.currentSong = false;
-  $scope.$on('play', function(event, data) {
-    console.log('player factory', data);
-    $scope.currentSong = data;
-    $scope.playing = PlayerFactory.isPlaying();
-    console.log('playing stat', PlayerFactory.isPlaying())
-  })
-  audio.addEventListener('ended', function () {
-    PlayerFactory.next();
-    $scope.$evalAsync(); // likely best, schedules digest if none happening
+ 
+  $scope.$on('playBar', function(event, data) {
+    $scope.playing();
+    $scope.currentSong = true;
   });
-  audio.addEventListener('timeupdate', function () {
-    //$scope.progress = 100 * audio.currentTime / audio.duration;
-    $scope.progress = PlayerFactory.getProgress();
-    // $scope.$digest(); // re-computes current template only (this scope)
-    $scope.$evalAsync(); // likely best, schedules digest if none happening
+  $scope.$on('pauseBar', function(event, data) {
+    $scope.playing();
   });
+  // audio.addEventListener('ended', function () {
+  //   PlayerFactory.next();
+  //   $scope.$evalAsync(); // likely best, schedules digest if none happening
+  // });
+  // audio.addEventListener('timeupdate', function () {
+  //   $scope.progress = PlayerFactory.getProgress();
+  //   $scope.$evalAsync(); // likely best, schedules digest if none happening
+  // });
+
+  $scope.playing = function () {
+      console.log('in playing bar');
+     $scope.playingStat = PlayerFactory.isPlaying();
+  }
 
   
   $scope.toggle = function () {
+
     if (PlayerFactory.isPlaying()) {
-      PlayerFactory.pause();
+      $rootScope.$broadcast('pause');
     }
-    else PlayerFactory.start();
+    else {
+      $rootScope.$broadcast('play');
+    }
   };
 
   // incoming events (from Album or toggle)
-  // $scope.$on('pause', PlayerFactory.pause);
+  //$scope.$on('pause', PlayerFactory.pause);
   // $scope.$on('play', PlayerFactory.start);
 
 
-  $scope.prev = PlayerFactory.previous
-  $scope.next = PlayerFactory.next
+  $scope.prev = PlayerFactory.previous;
+  $scope.next = PlayerFactory.next;
   
   // var audio = document.createElement('audio');
   // audio.addEventListener('ended', function () {
@@ -50,9 +54,6 @@ juke.controller('PlayerCtrl', function ($scope, $rootScope, PlayerFactory) {
   //   $scope.$evalAsync(); // likely best, schedules digest if none happening
   // });
 
-  // // state
-  // $scope.currentSong;
-  // $scope.playing = false;
 
   // // main toggle
   // $scope.toggle = function (song) {
@@ -64,11 +65,6 @@ juke.controller('PlayerCtrl', function ($scope, $rootScope, PlayerFactory) {
   // $scope.$on('pause', pause);
   // $scope.$on('play', play);
 
-  // // functionality
-  // function pause () {
-  //   audio.pause();
-  //   $scope.playing = false;
-  // }
   // function play (event, song){
   //   // stop existing audio (e.g. other song) in any case
   //   pause();

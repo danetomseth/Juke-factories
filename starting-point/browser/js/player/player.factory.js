@@ -10,33 +10,48 @@ juke.factory('PlayerFactory', function($rootScope){
 
 	
 	return {
+		//plays given song
+		//stops prev song on new song
 		start: function(song, songArray) {
 			songList = songArray;
 			
 			//currentSong.audio.pause();
-			this.pause()
+			if(currentSong.song === song) {
+				currentSong.playing = false;
+				currentSong.audio.pause();
+				return;
+				//console.log(this)
+    		}
     		currentSong.playing = true;
+			//this.pause()
 			currentSong.song = song;
 		    currentSong.audio.src = song.audioUrl;
 		    currentSong.audio.load();
 		    currentSong.audio.play();
 		},
+		//calls audios pause
 		pause: function() {
 			currentSong.audio.pause();
 			currentSong.playing = false;
+
+			console.log('Im a current song', currentSong)
 		},
+		//calls audios play
 		resume: function() {
+
 			currentSong.audio.play()
 			currentSong.playing = true;
 		},
+		//return true when song is playing
 		isPlaying: function() {
 			return currentSong.playing 
 		},
+		//returns current song, playing or not
 		getCurrentSong: function() {
-
 			return currentSong.song;
 		},
 		next: function() {
+			console.log('going to next song')
 			this.pause(); 
 			var playingSong = songList.indexOf(currentSong.song)
 			if(playingSong === songList.length - 1){
@@ -49,6 +64,7 @@ juke.factory('PlayerFactory', function($rootScope){
 			//$rootScope.$broadcast('next');
 		},
 		previous: function() {
+			console.log('prev song')
 			this.pause(); 
 			var playingSong = songList.indexOf(currentSong.song)
 			if(playingSong === 0){
@@ -68,8 +84,8 @@ juke.factory('PlayerFactory', function($rootScope){
 		},
 		autoCycle: function() {
 
-		},
-		currentSong: currentSong
+		}
+		// currentSong: currentSong
 
 	}
 });

@@ -1,10 +1,8 @@
 'use strict';
 
 juke.controller('AlbumCtrl', function($scope, $http, $rootScope, $log, StatsFactory, AlbumFactory, PlayerFactory) {
-    $scope.albumArray = [];
-    $scope.singleAlbum = []
-    $scope.oneAlbum  =[];
-    $scope.playing = false;
+    $scope.playingStat = false;
+    
     
     $scope.allAlbums = [];
     $rootScope.albumDatabase = [];
@@ -15,32 +13,54 @@ juke.controller('AlbumCtrl', function($scope, $http, $rootScope, $log, StatsFact
         return AlbumFactory.fetchById($scope.oneAlbum._id);
     })
     .then(function(res){
-        //console.log(res)
         $scope.oneAlbum = res;
     })
 
+    $scope.$on('pause', function(){
+        PlayerFactory.pause();
+        $scope.playing();
+    });
+    $scope.$on('play', function(){
+        PlayerFactory.resume();
+        $scope.playing();
+    });
+    $scope.playing = function() {
+        $scope.currentSong = PlayerFactory.getCurrentSong();
 
-
+        $scope.playingStat = PlayerFactory.isPlaying();
+        //console.log('song', $scope.currentSong);
+        console.log('playing stat:', $scope.playingStat);
+    }
     $scope.toggle = function(song) {
-        $scope.currentSong = song;
-        
-        
+        PlayerFactory.pause();
         if(PlayerFactory.isPlaying()){
-            $scope.playing = false;
-            PlayerFactory.pause();
-        } else{
-            
-            $scope.playing = true;
-            PlayerFactory.start(song, $scope.albumArray);   
+            //$scope.playing = false;
+            if(PlayerFactory.getCurrentSong() === song) {
+                $scope.playing();
+                $rootScope.$broadcast('pauseBar');
+                console.log('I got down here');
+            }
+            else {
+                PlayerFactory.start(song, $scope.albumArray);
+                $scope.playing();
+                $rootScope.$broadcast('playBar');   
+            }
         }
-        $rootScope.$broadcast('play', song);
+        else {
+            PlayerFactory.start(song, $scope.albumArray);
+            $scope.playing();
+            $rootScope.$broadcast('playBar');
+        } 
+        
     };
 
     $scope.play = function(){
-        return PlayerFactory.resume();
+        $scope.playing();
+        PlayerFactory.start()
     }
     $scope.pause = function(){
-        return PlayerFactory.pause();
+        $scope.playing();
+        PlayerFactory.pause();
     }
     $scope.currentSong = function(){
         return PlayerFactory.getCurrentSong();
@@ -52,11 +72,9 @@ juke.controller('AlbumCtrl', function($scope, $http, $rootScope, $log, StatsFact
     }
     $scope.pre = function(){
         return PlayerFactory.previous();
-        
     }
     // incoming events (from Player, toggle, or skip)
-    // $scope.$on('pause', pause);
-    // $scope.$on('play', play);
+    
     // $scope.$on('next', next);
     // $scope.$on('prev', prev);
 
